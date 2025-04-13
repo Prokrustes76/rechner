@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Bestehensrechner für Azubis</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(to right, #a8edea, #fed6e3);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+	
+            background-color: #ffffffcc;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            max-width: 350px;
+            width: 100%;
+            text-align: center;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {opacity: 0;}
+            to {opacity: 1;}
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        label {
+            display: block;
+            margin: 15px 0 5px;
+            font-weight: bold;
+            color: #444;
+        }
+
+        input[type="number"] {
+            width: 100px;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+        }
+
+        button {
+            margin-top: 25px;
+            padding: 12px 20px;
+            border: none;
+            background-color: #0077cc;
+            color: white;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #005fa3;
+        }
+
+        #ergebnis {
+            margin-top: 25px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #222;
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .fail {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+		
+		.nachpruefung {
+            background-color: #fff9c4;
+            color: #721c24;
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Bestehensrechner</h1>
+
+    <label for="edv">EDV-Prüfung (Teil 1):</label>
+    <input type="number" id="edv" min="0" max="100" placeholder="z. B. 78">
+
+    <label for="kbp">KBP-Klausur (Teil 2):</label>
+    <input type="number" id="kbp" min="0" max="100" placeholder="z. B. 84">
+
+    <label for="wiso">WISO-Klausur (Teil 2):</label>
+    <input type="number" id="wiso" min="0" max="100" placeholder="z. B. 67">
+
+    <label for="muendlich">Mündliche Prüfung (Teil 2):</label>
+    <input type="number" id="muendlich" min="0" max="100" placeholder="z. B. 90">
+
+	<div>
+		<button onclick="berechneBestehen()">Berechnen</button>
+	</div>
+    <div id="ergebnis"></div>
+</div>
+
+<script>
+    function berechneBestehen() {
+        let edv = parseFloat(document.getElementById("edv").value);
+        let kbp = parseFloat(document.getElementById("kbp").value);
+        let wiso = parseFloat(document.getElementById("wiso").value);
+        let muendlich = parseFloat(document.getElementById("muendlich").value);
+        let ergebnisDiv = document.getElementById("ergebnis");
+		let note = 6;
+        let total = edv * .25 + kbp * .30 + wiso * .1 + muendlich * .35
+		console.log(total)
+		let reason = "";
+		
+		if (muendlich < 50 || (kbp < 30 || wiso < 30)) {
+			result = "durchgefallen"
+			if (muendlich < 50) 
+				reason = "<p>Mündliche Prüfung unter 50 P."
+			if (kbp < 30 || wiso < 30) 
+				reason += "<p>Klausur unter 30 P."
+			}
+		else if (total < 50 | (wiso < 50 && kbp < 50)) {
+			result = "nachpruefung"
+			if (wiso < 50 && kbp < 50) 
+				reason = "<p>Beide Klausuren unter 50 P.</p>" 
+			if (total < 50)
+				reason += `<p>Insgesamt fehlen ${Math.ceil(10 * (50 - total)) / 10} Punkte</p>`
+
+			}
+		else
+			result = "bestanden"
+		
+
+        if (isNaN(edv) || isNaN(kbp) || isNaN(wiso) || isNaN(muendlich)) {
+            ergebnisDiv.textContent = "Bitte alle Felder ausfüllen.";
+            ergebnisDiv.className = "fail";
+            return;
+        }
+
+        if (result == 'bestanden') {
+            ergebnisDiv.innerHTML = `🎉 Du hast bestanden!`;
+            ergebnisDiv.className = "success";
+        } else if (result == 'durchgefallen'){
+            ergebnisDiv.innerHTML = "❌ Leider nicht bestanden!" + reason;
+            ergebnisDiv.className = "fail";
+        }
+		else {
+		    ergebnisDiv.innerHTML = "📝 Nachprüfung erforderlich!" + reason;
+            ergebnisDiv.className = "nachpruefung";
+		}
+    }
+</script>
+
+</body>
+</html>
